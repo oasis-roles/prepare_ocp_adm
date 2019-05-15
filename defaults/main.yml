@@ -1,0 +1,2 @@
+prepare_ocp_adm_become: true
+prepare_ocp_adm_become_user: root
