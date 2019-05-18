@@ -1,1 +1,72 @@
-# role tasks
+- name: install openshift-ansible package
+  package:
+    name: openshift-ansible
+    state: present
+  become: "{{ prepare_ocp_adm_become }}"
+  become_user: "{{ prepare_ocp_adm_become_user }}"
+
+- name: ensure that install prefix exists
+  file:
+    path: "{{ prepare_ocp_adm_destination }}"
+    state: directory
+    owner: "{{ prepare_ocp_adm_target_user }}"
+    mode: 0700
+  become: "{{ prepare_ocp_adm_target_user != ansible_user }}"
+  become_user: "{{ prepare_ocp_adm_target_user }}"
+
+- name: upload inventory file to system
+  copy:
+    src: "{{ prepare_ocp_adm_inventory_file }}"
+    dest: "{{ prepare_ocp_adm_destination }}/hosts"
+    owner: "{{ prepare_ocp_adm_target_user }}"
+    mode: 0644
+  become: "{{ prepare_ocp_adm_target_user != ansible_user }}"
+  become_user: "{{ prepare_ocp_adm_target_user }}"
+
+- name: create group_var directory
+  file:
+    path: "{{ prepare_ocp_adm_destination }}/group_vars"
+    state: directory
+    owner: "{{ prepare_ocp_adm_target_user }}"
+    mode: 0755
+  become: "{{ prepare_ocp_adm_target_user != ansible_user }}"
+  become_user: "{{ prepare_ocp_adm_target_user }}"
+
+- name: copy local files/group_vars/* to remote system
+  copy:
+    src: "{{ item }}"
+    dest: "{{ prepare_ocp_adm_destination }}/group_vars"
+    owner: "{{ prepare_ocp_adm_target_user }}"
+    mode: 0644
+  with_fileglob:
+    - group_vars/*
+  become: "{{ prepare_ocp_adm_target_user != ansible_user }}"
+  become_user: "{{ prepare_ocp_adm_target_user }}"
+
+- name: configure remote ansible.cfg
+  ini_file:
+    path: "{{ prepare_ocp_adm_destination }}/ansible.cfg"
+    section: defaults
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+  with_dict: "{{ prepare_ocp_adm_ansible_cfg }}"
+  become: "{{ prepare_ocp_adm_target_user != ansible_user }}"
+  become_user: "{{ prepare_ocp_adm_target_user }}"
+
+- name: create remote log directory
+  file:
+    path: "{{ prepare_ocp_adm_ansible_cfg.log_path | dirname }}"
+    state: directory
+    mode: 0755
+    owner: "{{ prepare_ocp_adm_target_user }}"
+  become: "{{ prepare_ocp_adm_target_user != ansible_user }}"
+  become_user: "{{ prepare_ocp_adm_target_user }}"
+
+- name: copy local SSH key to remote control machine
+  copy:
+    src: "{{ prepare_ocp_adm_ssh_private_key_file }}"
+    dest: "{{ prepare_ocp_adm_ansible_cfg.private_key_file }}"
+    owner: "{{ prepare_ocp_adm_target_user }}"
+    mode: 0600
+  become: "{{ prepare_ocp_adm_target_user != ansible_user }}"
+  become_user: "{{ prepare_ocp_adm_target_user }}"

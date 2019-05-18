@@ -1,2 +1,24 @@
 prepare_ocp_adm_become: true
 prepare_ocp_adm_become_user: root
+# Inventory file to upload to the remote system
+prepare_ocp_adm_inventory_file: "{{ inventory_file }}"
+# Destination where the hosts file will be uploaded to
+# Login user needs to have write permissions to this folder
+prepare_ocp_adm_destination: /etc/ansible
+# User on the remote system who will own the files
+# The Ansible login user must have permissions to become
+# this user, and this user needs to have the permissions
+# to write files and directories into the location pointed
+# at by prepare_ocp_adm_destination
+prepare_ocp_adm_target_user: root
+# SSH key to use
+prepare_ocp_adm_ssh_private_key_file: "{{ ansible_ssh_private_key_file }}"
+
+prepare_ocp_adm_ansible_cfg:
+  retry_files_save_path: "{{ prepare_ocp_adm_destination }}/"
+  log_path: "{{ prepare_ocp_adm_destination }}/logs/ansible.log"
+  remote_user: "{{ prepare_ocp_adm_target_user }}"
+  private_key_file: "{{ prepare_ocp_adm_destination }}/private_key"
+  host_key_checking: false
+  stdout_calback: yaml
+  inventory: "{{ prepare_ocp_adm_destination }}/hosts"
