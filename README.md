@@ -8,6 +8,24 @@ steps for deploying the [OpenShift Container Platform](https://www.openshift.com
 This role applies specifically to a deploy host that will drive the deployment
 and yet not become part of the cluster
 
+After invoking this role, the adm host will be ready for invoking the openshift-ansible
+playbooks against the other hosts in the cluster. An invocation such as the following
+should do the trick
+
+```bash
+cd /usr/share/ansible/openshift-ansible/playbooks
+# export ANSIBLE_CONFIG=/etc/ansible/ansible.cfg
+ansible-playbook prerequisites.yml
+ansible-playbook deploy_cluster
+```
+
+Substitute in the location of `{{ prepare_ocp_adm_destination }}/ansible.cfg` in the
+above execution, and all the other components of this role should automatically be
+configured. If you use the default value for desination than you can skip the export
+step, as /etc/ansible/ansible.cfg is the default location Ansible will search in
+for a config file. If you change the location of destination, then you will need
+to export the environment variable.
+
 Requirements
 ------------
 
@@ -24,6 +42,22 @@ Currently the following variables are supported:
 
 ### General
 
+* `prepare_ocp_adm_inventory_file` - Default: current inventory file being used
+  to run this playbook. This should point to the inventory file for the cluster
+  that will be uploaded to the adm host after it is configured.
+* `prepare_ocp_adm_destination` - Default: /etc/ansible. Path to the folder where
+  inventory file, group vars, ansible.cfg, ssh key, etc will be uploaded.
+* `prepare_ocp_adm_target_user` - Default: root. The user who will be running the
+  eventual install of OpenShift. This user needs to have write privileges to the
+  `prepare_ocp_adm_destination` locale.
+* `prepare_ocp_adm_ssh_private_key_file` - Default: ansible\_ssh\_private\_key\_file.
+  This is the private SSH key that the adm role will use to connect to the rest of
+  the cluster during OpenShift installation.
+* `prepare_ocp_adm_ansible_cfg`. A dictionary of ansible.cfg key:value pairs that
+  will be set in the ansible.cfg file added to the destination. While it is not
+  imperative to invoke Ansible with this file, doing so will automatically point
+  your playbook to the uploaded inventory file, private key file, and logs
+  directory on the adm host.
 * `prepare_ocp_adm_become` - Default: true. If this role needs administrator
   privileges, then use the Ansible become functionality (based off sudo).
 * `prepare_ocp_adm_become_user` - Default: root. If the role uses the become
