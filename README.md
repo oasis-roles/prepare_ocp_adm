@@ -16,7 +16,7 @@ should do the trick
 cd /usr/share/ansible/openshift-ansible/playbooks
 # export ANSIBLE_CONFIG=/etc/ansible/ansible.cfg
 ansible-playbook prerequisites.yml
-ansible-playbook deploy_cluster
+ansible-playbook deploy_cluster.yml
 ```
 
 Substitute in the location of `{{ prepare_ocp_adm_destination }}/ansible.cfg` in the
