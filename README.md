@@ -77,7 +77,7 @@ of OCP you are trying to deploy.
 Additionally, you need to have a local copy of the SSH private key file that will be used to
 log in to the remote hosts, if these are not explicitly defined elsewhere in group\_vars and
 the inventory file. Obviously, if other methods of authentication are in use, then those are
-outside of the scope of this playbook.
+outside of the scope of this role.
 
 Example Playbook
 ----------------
