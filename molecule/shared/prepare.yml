@@ -13,3 +13,6 @@
         - rhel-7-server-rpms
         - rhel-7-server-extras-rpms
         - rhsl-7-server-optional-rpms
+        - rhel-7-server-ose-3.11-rpms
+        - rhel-7-server-ansible-2.6-rpms
+    prepare_ocp_adm_inventory_file: hosts
